@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  let url = "http://ip-api.com/json/";
+export async function GET() {
+  const url = "http://ip-api.com/json/";
 
-  if (process.env.VERCEL) {
-    const ip = request.headers.get("x-forwarded-for");
+  // if (process.env.VERCEL) {
+  //   const ip = request.headers.get("x-forwarded-for");
 
-    if (ip) {
-      url = `http://ip-api.com/json/${ip}`;
-    }
-  }
+  //   if (ip) {
+  //     url = `http://ip-api.com/json/${ip}`;
+  //   }
+  // }
+
+  // console.log("URL", url);
 
   try {
     const geoResponse = await fetch(url);
