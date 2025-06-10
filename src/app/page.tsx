@@ -21,9 +21,6 @@ export default async function Dashboard() {
 
   const geoInfoPromise = fetchOrNull<GeoResponse>(`${baseURL}/api/geo`, {
     cache: "no-store",
-    headers: {
-      "x-api-key": process.env.API_KEY!,
-    },
   });
 
   const [initialQuoteInfo, geoInfo] = await Promise.all([quotePromise, geoInfoPromise]);

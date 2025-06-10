@@ -39,7 +39,6 @@ A personalized dashboard to start your day with the information that matters mos
     Create a file named `.env.local` in the root of the project and add the following variables:
 
     ```bash
-    API_KEY=your_secret_api_key
     DEFAULT_LATITUDE=34.0522
     DEFAULT_LONGITUDE=-118.2437
     DEFAULT_CITY="Los Angeles"
@@ -49,7 +48,6 @@ A personalized dashboard to start your day with the information that matters mos
 
     > **Note on Environment Variables:**
     >
-    > -   `API_KEY`: This is a secret key you create to protect the `/api/geo` endpoint. It ensures that only authorized requests can access the geolocation data.
     > -   `DEFAULT_*` variables: These provide a fallback location for the weather forecast. They are used when the application is running in an environment where Vercel's automatic geolocation is not available (e.g., your local machine).
 
 ## Running the Project

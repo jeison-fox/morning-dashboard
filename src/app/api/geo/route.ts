@@ -3,16 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "edge";
 
 export function GET(request: NextRequest) {
-  const apiKey = request.headers.get("x-api-key");
-  const serverApiKey = process.env.API_KEY;
-
-  console.error("GEO_API_DEBUG: Received API Key from header:", apiKey ? `"...${apiKey.slice(-4)}"` : "null or undefined");
-  console.error("GEO_API_DEBUG: Server API Key from env:", serverApiKey ? `"...${serverApiKey.slice(-4)}"` : "null or undefined");
-
-  if (apiKey !== serverApiKey) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const { latitude, longitude, city, region, country } = request.geo ?? {
     latitude: parseFloat(process.env.DEFAULT_LATITUDE!),
     longitude: parseFloat(process.env.DEFAULT_LONGITUDE!),
