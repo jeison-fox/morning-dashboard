@@ -1,22 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { geolocation } from "@vercel/functions";
 
-export function GET(request: NextRequest) {
-  const apiKey = request.headers.get("x-api-key");
+export async function GET(request: NextRequest) {
+  let url = "http://ip-api.com/json/";
 
-  if (apiKey !== process.env.API_KEY) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (process.env.VERCEL) {
+    const ip = request.headers.get("x-forwarded-for");
+
+    if (ip) {
+      url = `http://ip-api.com/json/${ip}`;
+    }
   }
 
-  const { latitude, longitude, city, region, country } = geolocation(request);
+  try {
+    const geoResponse = await fetch(url);
+    const data = await geoResponse.json();
 
-  const geoInfo = {
-    latitude: latitude ?? parseFloat(process.env.DEFAULT_LATITUDE!),
-    longitude: longitude ?? parseFloat(process.env.DEFAULT_LONGITUDE!),
-    city: city ?? process.env.DEFAULT_CITY!,
-    region: region ?? process.env.DEFAULT_REGION!,
-    country: country ?? process.env.DEFAULT_COUNTRY!,
-  };
+    if (data.status === "fail") {
+      throw new Error(data.message || "Failed to fetch geolocation from ip-api.com");
+    }
 
-  return NextResponse.json(geoInfo);
+    const geoInfo = {
+      latitude: data.lat,
+      longitude: data.lon,
+      city: data.city,
+      region: data.regionName,
+      country: data.country,
+    };
+
+    return NextResponse.json(geoInfo, {
+      headers: {
+        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch from ip-api.com:", error);
+
+    const geoInfo = {
+      latitude: parseFloat(process.env.DEFAULT_LATITUDE!),
+      longitude: parseFloat(process.env.DEFAULT_LONGITUDE!),
+      city: process.env.DEFAULT_CITY!,
+      region: process.env.DEFAULT_REGION!,
+      country: process.env.DEFAULT_COUNTRY!,
+    };
+
+    return NextResponse.json(geoInfo);
+  }
 }
