@@ -18,9 +18,5 @@ export function GET(request: NextRequest) {
     country: country ?? process.env.DEFAULT_COUNTRY!,
   };
 
-  return NextResponse.json(geoInfo, {
-    headers: {
-      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
-    },
-  });
+  return NextResponse.json(geoInfo);
 }
