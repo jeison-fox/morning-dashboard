@@ -1,0 +1,7 @@
+@import url("./reset.css");
+@import url("./variables.css");
+
+html {
+  background-color: var(--gray-100);
+  color: var(--gray-300);
+}

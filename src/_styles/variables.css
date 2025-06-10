@@ -1,0 +1,35 @@
+:root {
+  /* Colors */
+
+  --gray-300: #2d292b;
+  --gray-200: #696b68;
+  --gray-100: #f4f6f8;
+
+  --yellow-100: #ffebd6;
+
+  --green-100: #bacbc3;
+
+  --blue-100: #d6f4ff;
+
+  --purple-100: #f6dcff;
+
+  /* Spacing */
+  --spacing-1: 0.313rem;
+  --spacing-2: 0.625em;
+  --spacing-3: 0.938rem;
+  --spacing-4: 1.25rem;
+
+  /* Typography */
+  --text-12: 0.75rem;
+  --text-14: 0.875rem;
+  --text-18: 1.13rem;
+  --text-16: 1rem;
+  --text-20: 1.25rem;
+  --text-32: 2rem;
+  --text-54: 3.375rem;
+  --text-80: 5rem;
+
+  /* Shadows */
+  --shadow-1: var(--spacing-1) var(--spacing-1) 0px 0px var(--gray-200);
+  --shadow-2: var(--spacing-2) var(--spacing-2) 0px 0px var(--gray-200);
+}

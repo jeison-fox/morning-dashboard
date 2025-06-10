@@ -1,0 +1,41 @@
+.main {
+  margin-bottom: var(--spacing-3);
+
+  @media (width >= 48rem) {
+    background-color: white;
+    border: 3px solid var(--gray-200);
+    border-radius: var(--spacing-2);
+    margin: var(--spacing-4) auto 0 auto;
+    max-width: 43.75em;
+  }
+
+  @media (width >= 64rem) {
+    max-width: 62.5em;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-3);
+  row-gap: var(--spacing-3);
+
+  @media (width >= 48rem) {
+    padding: var(--spacing-4);
+    row-gap: var(--spacing-4);
+  }
+}
+
+.weatherContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-3);
+
+  @media (width >= 48rem) {
+    gap: var(--spacing-4);
+  }
+
+  @media (width >= 64rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}

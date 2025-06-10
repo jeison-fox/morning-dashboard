@@ -1,95 +1,74 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Quote from "@components/quote";
+import WeatherCard from "@components/weather-card";
+import ForecastCard from "@components/forecast-card";
+import Header from "@components/header";
+import { fetchOrNull, getBaseUrl } from "@utils/common";
+import { getOpenMeteoURlParams } from "@utils/weather";
+import styles from "@/app/styles.module.css";
+import type { QuoteResponse } from "@customTypes/quote";
+import type { GeoResponse } from "@customTypes/geo";
+import type { WeatherResponse } from "@customTypes/weather";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
+export default async function Dashboard() {
+  const baseURL = getBaseUrl();
+
+  const quotePromise = fetchOrNull<QuoteResponse>(
+    "http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json",
+    {
+      cache: "no-store",
+    },
+  );
+
+  const geoInfoPromise = fetchOrNull<GeoResponse>(`${baseURL}/api/geo`, {
+    cache: "no-store",
+    headers: {
+      "x-api-key": process.env.API_KEY!,
+    },
+  });
+
+  const [initialQuoteInfo, geoInfo] = await Promise.all([quotePromise, geoInfoPromise]);
+
+  const weatherPromise = geoInfo
+    ? fetchOrNull<WeatherResponse>(`https://api.open-meteo.com/v1/forecast?${getOpenMeteoURlParams(geoInfo)}`, {
+        cache: "no-store",
+      })
+    : Promise.resolve(null);
+
+  const initialWeatherInfo = await weatherPromise;
+  const renderQuote = initialQuoteInfo ? <Quote initialQuoteInfo={initialQuoteInfo} /> : <Quote.ErrorFallback />;
+
+  if (!geoInfo) {
+    return (
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
+        <Header geoInfo={null} />
+        <section className={styles.content}>
+          {renderQuote}
+          <div className={styles.weatherContainer}>
+            <WeatherCard.ErrorFallback message="Location Unavailable" />
+            <ForecastCard.ErrorFallback message="Location Unavailable" />
+          </div>
+        </section>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    );
+  }
+
+  return (
+    <main className={styles.main}>
+      <Header geoInfo={geoInfo} />
+      <section className={styles.content}>
+        {renderQuote}
+        {initialWeatherInfo ? (
+          <div className={styles.weatherContainer}>
+            <WeatherCard data={initialWeatherInfo.current} units={initialWeatherInfo.current_units} />
+            <ForecastCard data={initialWeatherInfo.daily} units={initialWeatherInfo.daily_units} />
+          </div>
+        ) : (
+          <div className={styles.weatherContainer}>
+            <WeatherCard.ErrorFallback />
+            <ForecastCard.ErrorFallback />
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
